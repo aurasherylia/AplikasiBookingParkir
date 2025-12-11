@@ -36,56 +36,21 @@ class SecurityHistoryScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // ========================================================
-              // ACTIVE SESSIONS (ALL)
-              // ========================================================
-              const Text(
-                "Active Sessions",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              const Text("Active Sessions",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
 
-              if (active.isEmpty)
-                _emptyCard("No Active Parking Session"),
-
+              if (active.isEmpty) _emptyCard("No Active Parking Session"),
               ...active.map((b) => _activeCard(b)).toList(),
 
               const SizedBox(height: 28),
 
-              // ========================================================
-              // COMPLETED SESSIONS (ALL)
-              // ========================================================
-              const Text(
-                "Completed Sessions",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              const Text("Completed Sessions",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
 
-              if (completed.isEmpty)
-                _emptyCard("No Completed Data"),
-
+              if (completed.isEmpty) _emptyCard("No Completed Data"),
               ...completed.map((b) => _completedCard(b)).toList(),
-
-              const SizedBox(height: 22),
-
-              // GO BACK BUTTON
-              SizedBox(
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kPrimaryGreen,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    "Go Back to Home Screen",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
             ],
           );
         },
@@ -93,9 +58,6 @@ class SecurityHistoryScreen extends StatelessWidget {
     );
   }
 
-  // ================================================================
-  // ACTIVE CARD (GREEN BAR)
-  // ================================================================
   Widget _activeCard(Booking b) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -119,11 +81,9 @@ class SecurityHistoryScreen extends StatelessWidget {
               color: kPrimaryGreen.withOpacity(0.22),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: const Text(
-              "ACTIVE",
-              style: TextStyle(
-                  color: kPrimaryGreen, fontWeight: FontWeight.bold),
-            ),
+            child: const Text("ACTIVE",
+                style: TextStyle(
+                    color: kPrimaryGreen, fontWeight: FontWeight.bold)),
           ),
 
           const SizedBox(height: 12),
@@ -131,10 +91,12 @@ class SecurityHistoryScreen extends StatelessWidget {
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
           Text("Unique ID: ${b.uniqueId}",
               style: const TextStyle(color: kPrimaryGreen)),
+          Text("Plate: ${b.plateNumber}"),   // <<--- NEW
           const SizedBox(height: 4),
           Text("Area: ${b.areaName}   -   Slot: ${b.slot}"),
 
           const SizedBox(height: 10),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -147,9 +109,6 @@ class SecurityHistoryScreen extends StatelessWidget {
     );
   }
 
-  // ================================================================
-  // COMPLETED CARD
-  // ================================================================
   Widget _completedCard(Booking b) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -174,6 +133,7 @@ class SecurityHistoryScreen extends StatelessWidget {
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
           Text("Unique ID: ${b.uniqueId}",
               style: const TextStyle(color: kPrimaryGreen)),
+          Text("Plate: ${b.plateNumber}"),   // <<--- NEW
 
           const SizedBox(height: 4),
           Text("Area: ${b.areaName}   -   Slot: ${b.slot}"),
@@ -194,9 +154,6 @@ class SecurityHistoryScreen extends StatelessWidget {
     );
   }
 
-  // ================================================================
-  // EMPTY CARD
-  // ================================================================
   Widget _emptyCard(String txt) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -210,27 +167,18 @@ class SecurityHistoryScreen extends StatelessWidget {
           )
         ],
       ),
-      child: Center(
-        child: Text(txt, style: const TextStyle(color: Colors.grey)),
-      ),
+      child: Center(child: Text(txt, style: const TextStyle(color: Colors.grey))),
     );
   }
 
-  // ================================================================
-  // SMALL INFO TEXT
-  // ================================================================
   Widget _infoText(String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: const TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w600),
-        ),
+        Text(value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
       ],
     );
   }

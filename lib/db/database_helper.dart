@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
@@ -9,9 +10,6 @@ class DatabaseHelper {
 
   Database? _db;
 
-  // ===============================
-  // INIT DATABASE
-  // ===============================
   Future<void> init() async {
     _db ??= await _initDb();
   }
@@ -27,15 +25,12 @@ class DatabaseHelper {
 
     return openDatabase(
       path,
-      version: 20, // UPGRADE VERSION IF NEEDED
-      onCreate: (db, version) async => await _createTables(db),
-      onUpgrade: (db, oldVersion, newVersion) async => await _createTables(db),
+      version: 26,
+      onCreate: (db, version) => _createTables(db),
+      onUpgrade: (db, oldVersion, newVersion) => _createTables(db),
     );
   }
 
-  // ===============================
-  // CREATE ALL TABLES
-  // ===============================
   Future<void> _createTables(Database db) async {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS bookings(
@@ -46,7 +41,8 @@ class DatabaseHelper {
         startTime TEXT,
         endTime TEXT,
         createdAt TEXT,
-        isActive INTEGER
+        isActive INTEGER,
+        plateNumber TEXT
       )
     ''');
 
@@ -60,86 +56,74 @@ class DatabaseHelper {
     ''');
   }
 
-  // ===============================
-  // GENERATE UNIQUE CODE "CPA-XXXX"
-  // ===============================
-  String generateUniqueId(int id) {
-    return "CPA-${id.toString().padLeft(4, '0')}";
+  String _genUniqueId(int id) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rand = Random();
+    final random = List.generate(5, (_) => chars[rand.nextInt(chars.length)]).join();
+    return "CPA-${id.toString().padLeft(4, '0')}-$random";
   }
 
-  // ===============================
-  // INSERT BOOKING
-  // ===============================
-  Future<int> insertBooking(Booking booking) async {
+  Future<Booking> insertBooking(Booking b) async {
     final db = await database;
 
-    // Insert awal → dapatkan ID
-    int newId = await db.insert(
-      'bookings',
-      {
-        'uniqueId': 'TEMP',
-        'areaName': booking.areaName,
-        'slot': booking.slot,
-        'startTime': booking.startTime,
-        'endTime': booking.endTime,
-        'createdAt': booking.createdAt,
-        'isActive': 1,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    int newId = await db.insert("bookings", {
+      'uniqueId': 'TEMP',
+      'areaName': b.areaName,
+      'slot': b.slot,
+      'startTime': b.startTime,
+      'endTime': b.endTime,
+      'createdAt': b.createdAt,
+      'isActive': b.isActive,
+      'plateNumber': b.plateNumber,
+    });
 
-    // Generate Unique ID
-    String realId = generateUniqueId(newId);
+    final uid = _genUniqueId(newId);
 
-    // Update dengan uniqueId final
     await db.update(
       'bookings',
-      {'uniqueId': realId},
+      {'uniqueId': uid},
       where: 'id = ?',
       whereArgs: [newId],
     );
 
-    // Tandai slot sebagai booked
-    await bookSlot(booking.areaName, booking.slot);
+    await bookSlot(b.areaName, b.slot);
 
-    return newId;
+    return Booking(
+      id: newId,
+      uniqueId: uid,
+      areaName: b.areaName,
+      slot: b.slot,
+      startTime: b.startTime,
+      endTime: b.endTime,
+      createdAt: b.createdAt,
+      isActive: 1,
+      plateNumber: b.plateNumber,
+    );
   }
 
-  // ===============================
-  // GET ALL BOOKINGS
-  // ===============================
-  Future<List<Booking>> getAllBookings() async {
-    final db = await database;
-    final res = await db.query('bookings', orderBy: 'id DESC');
-    return res.map((e) => Booking.fromMap(e)).toList();
-  }
-
-  // ===============================
-  // GET ACTIVE BOOKINGS (SECURITY)
-  // ===============================
   Future<List<Booking>> getActiveBookings() async {
     final db = await database;
-    final res = await db.query('bookings', where: 'isActive = 1');
+    final res = await db.query("bookings", where: "isActive = 1");
     return res.map((e) => Booking.fromMap(e)).toList();
   }
 
-  // ===============================
-  // SECURITY – FIND BY UNIQUE ID
-  // ===============================
-  Future<Booking?> getBookingByUniqueId(String uniqueId) async {
+  Future<List<Booking>> getAllBookings() async {
+    final db = await database;
+    final res = await db.query("bookings", orderBy: "id DESC");
+    return res.map((e) => Booking.fromMap(e)).toList();
+  }
+
+  Future<Booking?> getBookingByUniqueId(String code) async {
     final db = await database;
     final res = await db.query(
       'bookings',
       where: 'uniqueId = ?',
-      whereArgs: [uniqueId],
+      whereArgs: [code],
     );
     if (res.isEmpty) return null;
     return Booking.fromMap(res.first);
   }
 
-  // ===============================
-  // SECURITY – FINISH BOOKING
-  // ===============================
   Future<void> finishBooking(int id) async {
     final db = await database;
     await db.update(
@@ -150,22 +134,19 @@ class DatabaseHelper {
     );
   }
 
-  // ===============================
-  // BOOK SLOT
-  // ===============================
-  Future<void> bookSlot(String areaName, String slotName) async {
+  Future<void> bookSlot(String area, String slot) async {
     final db = await database;
 
-    final existed = await db.query(
+    final exist = await db.query(
       'slots',
       where: 'areaName = ? AND slotName = ?',
-      whereArgs: [areaName, slotName],
+      whereArgs: [area, slot],
     );
 
-    if (existed.isEmpty) {
+    if (exist.isEmpty) {
       await db.insert('slots', {
-        'areaName': areaName,
-        'slotName': slotName,
+        'areaName': area,
+        'slotName': slot,
         'isBooked': 1,
       });
     } else {
@@ -173,21 +154,17 @@ class DatabaseHelper {
         'slots',
         {'isBooked': 1},
         where: 'areaName = ? AND slotName = ?',
-        whereArgs: [areaName, slotName],
+        whereArgs: [area, slot],
       );
     }
   }
 
-  // ===============================
-  // CHECK SLOT STATUS
-  // ===============================
-  Future<bool> isSlotBooked(String areaName, String slotName) async {
+  Future<bool> isSlotBooked(String a, String s) async {
     final db = await database;
-
     final res = await db.query(
       'slots',
       where: 'areaName = ? AND slotName = ?',
-      whereArgs: [areaName, slotName],
+      whereArgs: [a, s],
     );
 
     if (res.isEmpty) return false;

@@ -20,7 +20,6 @@ class _IncomingRidesScreenState extends State<IncomingRidesScreen> {
     _future = DatabaseHelper.instance.getActiveBookings();
   }
 
-  /// Refresh setelah kembali dari QR screen
   void _refresh() {
     setState(() {
       _future = DatabaseHelper.instance.getActiveBookings();
@@ -65,7 +64,6 @@ class _IncomingRidesScreenState extends State<IncomingRidesScreen> {
             itemCount: list.length,
             itemBuilder: (_, i) {
               final b = list[i];
-
               return _incomingCard(b);
             },
           );
@@ -74,9 +72,6 @@ class _IncomingRidesScreenState extends State<IncomingRidesScreen> {
     );
   }
 
-  /// =====================================================
-  /// CARD UI YG SANGAT MIRIP DESAIN
-  /// =====================================================
   Widget _incomingCard(Booking b) {
     return Container(
       margin: const EdgeInsets.only(bottom: 18),
@@ -96,7 +91,6 @@ class _IncomingRidesScreenState extends State<IncomingRidesScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Badge ACTIVE
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
@@ -114,14 +108,12 @@ class _IncomingRidesScreenState extends State<IncomingRidesScreen> {
           ),
 
           const SizedBox(height: 14),
-
-          /// User Name (static sementara)
           const Text(
             "Aura Sherylia",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 4),
 
+          const SizedBox(height: 4),
           Text(
             "Unique ID: ${b.uniqueId}",
             style: const TextStyle(
@@ -133,6 +125,9 @@ class _IncomingRidesScreenState extends State<IncomingRidesScreen> {
           const SizedBox(height: 12),
           _infoRow("Area Parkir", b.areaName),
           _infoRow("Slot", b.slot),
+
+          _infoRow("Plate Number", b.plateNumber),   // <<--- NEW
+
           _infoRow("Check-in", b.startTime),
           _infoRow("Check-out (Est)", b.endTime),
           _infoRow("Specifications", "None"),
@@ -143,15 +138,12 @@ class _IncomingRidesScreenState extends State<IncomingRidesScreen> {
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: () async {
-                /// GO TO QR SCAN, WAIT FOR RESULT
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => const ScanQrScreen(),
                   ),
                 );
-
-                /// REFRESH LIST AFTER SCAN
                 _refresh();
               },
               child: Container(
@@ -182,9 +174,7 @@ class _IncomingRidesScreenState extends State<IncomingRidesScreen> {
           Text(title, style: const TextStyle(color: Colors.black54)),
           Text(
             value,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ],
       ),

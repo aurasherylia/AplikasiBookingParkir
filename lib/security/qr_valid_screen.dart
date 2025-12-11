@@ -27,8 +27,9 @@ class QrValidScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(26),
-        child:
-            Center(child: valid ? _valid(context) : _invalid()),
+        child: Center(
+          child: valid ? _valid(context) : _invalid(),
+        ),
       ),
     );
   }
@@ -51,34 +52,53 @@ class QrValidScreen extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.check_circle,
-              color: kPrimaryGreen, size: 70),
+          const Icon(
+            Icons.check_circle,
+            color: kPrimaryGreen,
+            size: 70,
+          ),
 
           const SizedBox(height: 10),
-          const Text("Valid ID",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 18)),
+          const Text(
+            "Valid ID",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
           const SizedBox(height: 10),
 
           const CircleAvatar(
             radius: 40,
-            backgroundImage:
-                AssetImage("assets/images/user_placeholder.jpg"),
+            backgroundImage: AssetImage("assets/images/user_placeholder.jpg"),
           ),
 
           const SizedBox(height: 8),
-          const Text("Aura Sherylia",
-              style: TextStyle(
-                  fontSize: 17, fontWeight: FontWeight.bold)),
-          Text("Unique ID: ${b.uniqueId}",
-              style: const TextStyle(
-                  color: kPrimaryGreen,
-                  fontWeight: FontWeight.w600)),
-          const SizedBox(height: 20),
+          const Text(
+            "Aura Sherylia",
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+          ),
 
-          const Text("Booking Details",
-              style:
-                  TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          Text(
+            "Unique ID: ${b.uniqueId}",
+            style: const TextStyle(
+              color: kPrimaryGreen,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          Text(
+            "Plate Number: ${b.plateNumber}",
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+
+          const SizedBox(height: 20),
+          const Text(
+            "Booking Details",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 10),
 
           _detail("Check-in Time:", b.startTime),
@@ -94,16 +114,20 @@ class QrValidScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: kPrimaryGreen,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onPressed: () async {
                 await DatabaseHelper.instance.finishBooking(b.id!);
                 Navigator.pop(context);
               },
-              child: const Text("Allow Access",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
+              child: const Text(
+                "Allow Access",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ],
@@ -117,8 +141,7 @@ class QrValidScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: const TextStyle(color: Colors.grey)),
+          Text(label, style: const TextStyle(color: Colors.grey)),
           Text(v, style: const TextStyle(fontWeight: FontWeight.w600)),
         ],
       ),
@@ -131,9 +154,10 @@ class QrValidScreen extends StatelessWidget {
       children: const [
         Icon(Icons.cancel, size: 80, color: Colors.red),
         SizedBox(height: 10),
-        Text("QR TIDAK VALID",
-            style:
-                TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(
+          "QR TIDAK VALID",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }

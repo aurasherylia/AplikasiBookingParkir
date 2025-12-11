@@ -14,6 +14,7 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.9.0
   mobile_scanner: ^3.5.0
+  qr_flutter: ^4.1.0
 
 
 dev_dependencies:

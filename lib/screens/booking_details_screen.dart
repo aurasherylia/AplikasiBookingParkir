@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../constants.dart';
 import '../models/booking.dart';
-import '../routes/custom_routes.dart';   
+import '../routes/custom_routes.dart';
 import 'booking_history_screen.dart';
 
 class BookingDetailsScreen extends StatelessWidget {
@@ -13,6 +14,7 @@ class BookingDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -22,41 +24,57 @@ class BookingDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              /// BACK BUTTON
               Row(
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Navigator.pop(context),
                   ),
                 ],
               ),
+
               const SizedBox(height: 8),
 
+              /// ============== QR CODE CARD ==============
               _whiteCard(
                 child: Column(
                   children: [
                     const Text(
-                      'Slot Parkir UPN',
+                      "Slot Parkir UPN",
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 24),
+
+                    const SizedBox(height: 22),
+
+                    // QR CODE
                     Container(
-                      width: 160,
-                      height: 160,
-                      alignment: Alignment.center,
+                      width: 180,
+                      height: 180,
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.grey.shade300),
                       ),
-                      child: const Icon(Icons.qr_code, size: 120),
+                      child: QrImageView(
+                        data: booking.uniqueId,
+                        version: QrVersions.auto,
+                        size: 160,
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Unique ID: CPA-0129',
-                      style: TextStyle(fontSize: 13),
+
+                    const SizedBox(height: 10),
+
+                    Text(
+                      "Unique ID: ${booking.uniqueId}",
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -64,29 +82,34 @@ class BookingDetailsScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
+              /// ============== BOOKING DETAILS ==============
               _whiteCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Booking Details',
+                      "Booking Details",
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         fontSize: 16,
+                        color: Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _detailRow('Location', booking.areaName),
-                    _detailRow('Slot', booking.slot),
-                    _detailRow('Check-in Time', booking.startTime),
-                    _detailRow('Check-out Time (Est)', booking.endTime),
-                    _detailRow('Specifications', 'None'),
+
+                    _detailRow("Plate Number", booking.plateNumber),
+                    _detailRow("Location", booking.areaName),
+                    _detailRow("Slot", booking.slot),
+                    _detailRow("Check-in Time", booking.startTime),
+                    _detailRow("Check-out Time", booking.endTime),
+                    _detailRow("Specifications", "None"),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
 
+              /// ============== DIRECTIONS HINT ==============
               Center(
                 child: RichText(
                   text: const TextSpan(
@@ -94,11 +117,10 @@ class BookingDetailsScreen extends StatelessWidget {
                     style: TextStyle(color: Colors.black87, fontSize: 13),
                     children: [
                       TextSpan(
-                        text: 'Get Directions',
+                        text: "Get Directions",
                         style: TextStyle(
                           color: kPrimaryGreen,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -108,23 +130,28 @@ class BookingDetailsScreen extends StatelessWidget {
 
               const Spacer(),
 
+              /// ============== VIEW HISTORY BUTTON ==============
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kPrimaryGreen,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   onPressed: () {
-                    Navigator.of(context).push(
+                    Navigator.push(
+                      context,
                       fadeRoute(const ParkingHistoryScreen()),
                     );
                   },
                   child: const Text(
                     "View History",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -137,12 +164,15 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
+  // ============================
+  // WHITE CARD WRAPPER
+  // ============================
   Widget _whiteCard({required Widget child}) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -155,16 +185,23 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
+  // ============================
+  // DETAIL ROW
+  // ============================
   Widget _detailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+          Text(label,
+              style: const TextStyle(color: Colors.grey, fontSize: 13)),
           Text(
             value,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
           ),
         ],
       ),

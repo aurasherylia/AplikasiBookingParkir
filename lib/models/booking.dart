@@ -7,6 +7,7 @@ class Booking {
   final String endTime;
   final String createdAt;
   final int isActive;
+  final String plateNumber;
 
   Booking({
     this.id,
@@ -17,6 +18,7 @@ class Booking {
     required this.endTime,
     required this.createdAt,
     required this.isActive,
+    required this.plateNumber,
   });
 
   factory Booking.fromMap(Map<String, dynamic> map) {
@@ -29,6 +31,7 @@ class Booking {
       endTime: map['endTime'],
       createdAt: map['createdAt'],
       isActive: map['isActive'],
+      plateNumber: map['plateNumber'],
     );
   }
 
@@ -42,6 +45,7 @@ class Booking {
       'endTime': endTime,
       'createdAt': createdAt,
       'isActive': isActive,
+      'plateNumber': plateNumber,
     };
   }
 }
