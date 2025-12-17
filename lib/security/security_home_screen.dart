@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
+import '../db/database_helper.dart';
+import '../models/booking.dart';
 import '../routes/custom_routes.dart';
 import '../screens/login_screen.dart';
 
@@ -15,7 +17,7 @@ class SecurityHomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      /// FLOATING SCAN BUTTON (BOTTOM CENTER)
+      /// FLOATING SCAN BUTTON
       floatingActionButton: Container(
         height: 70,
         width: 70,
@@ -30,11 +32,8 @@ class SecurityHomeScreen extends StatelessWidget {
           ],
         ),
         child: IconButton(
-          icon: const Icon(
-            Icons.qr_code_scanner,
-            size: 34,
-            color: Colors.white,
-          ),
+          icon: const Icon(Icons.qr_code_scanner,
+              size: 34, color: Colors.white),
           onPressed: () {
             Navigator.push(
               context,
@@ -43,49 +42,26 @@ class SecurityHomeScreen extends StatelessWidget {
           },
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-      /// BOTTOM NAV BAR
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 6,
-        elevation: 8,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [
-              Icon(Icons.home_outlined),
-              Icon(Icons.notifications_none),
-              SizedBox(width: 40),
-              Icon(Icons.history),
-              Icon(Icons.settings),
-            ],
-          ),
-        ),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
 
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// HEADER IMAGE
+            /// HEADER
             SizedBox(
               height: 150,
               width: double.infinity,
               child: Stack(
                 children: [
-                  /// MAP HEADER IMAGE
-                  SizedBox(
+                  Image.asset(
+                    "assets/images/logo3.png",
                     height: 150,
                     width: double.infinity,
-                    child: Image.asset(
-                      "assets/images/logo3.png",   // <-- sesuai permintaan
-                      fit: BoxFit.cover,
-                    ),
+                    fit: BoxFit.cover,
                   ),
 
-                  /// LOGOUT BUTTON
+                  /// LOGOUT
                   Positioned(
                     right: 15,
                     top: 15,
@@ -99,7 +75,7 @@ class SecurityHomeScreen extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withOpacity(0.85),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.logout, size: 22),
@@ -117,16 +93,13 @@ class SecurityHomeScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "UPN ‘Veteran’ Yogyakarta Security",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
 
             const SizedBox(height: 10),
 
-            /// PROFILE ROW
+            /// PROFILE
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -142,10 +115,7 @@ class SecurityHomeScreen extends StatelessWidget {
                       Text("Amanda Neyla",
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text(
-                        "Security Guard",
-                        style: TextStyle(fontSize: 13),
-                      ),
+                      Text("Security Guard", style: TextStyle(fontSize: 13)),
                       Text("Badge number - SG911",
                           style: TextStyle(color: Colors.grey)),
                     ],
@@ -168,14 +138,21 @@ class SecurityHomeScreen extends StatelessWidget {
                         title: "Notifications",
                         icon: Icons.notifications,
                         badge: true,
-                        page: const IncomingRidesScreen(),
+                        onTap: () => _showNotifications(context),
                       ),
                       const SizedBox(width: 12),
                       _menuCard(
                         context,
                         title: "View Incoming Rides",
                         icon: Icons.people_alt_outlined,
-                        page: const IncomingRidesScreen(),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    const IncomingRidesScreen()),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -186,38 +163,48 @@ class SecurityHomeScreen extends StatelessWidget {
                         context,
                         title: "Parking History",
                         icon: Icons.history,
-                        page: const SecurityHistoryScreen(),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    const SecurityHistoryScreen()),
+                          );
+                        },
                       ),
                       const SizedBox(width: 12),
                       _menuCard(
                         context,
                         title: "Contact Police",
-                        icon: Icons.help_outline,
-                        page: const SecurityHistoryScreen(),
+                        icon: Icons.local_police,
+                        onTap: () => _showPoliceContact(context),
                       ),
                     ],
                   ),
                 ],
               ),
-            )
+            ),
+
+            const SizedBox(height: 90),
           ],
         ),
       ),
     );
   }
 
-  /// MENU CARD WIDGET
+  /// =========================
+  /// MENU CARD
+  /// =========================
   Widget _menuCard(
     BuildContext context, {
     required String title,
     required IconData icon,
-    required Widget page,
+    required VoidCallback onTap,
     bool badge = false,
   }) {
     return Expanded(
       child: GestureDetector(
-        onTap: () =>
-            Navigator.push(context, MaterialPageRoute(builder: (_) => page)),
+        onTap: onTap,
         child: Container(
           height: 110,
           decoration: BoxDecoration(
@@ -238,16 +225,12 @@ class SecurityHomeScreen extends StatelessWidget {
                   children: [
                     Icon(icon, size: 30, color: kPrimaryGreen),
                     const SizedBox(height: 6),
-                    Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12),
-                    ),
+                    Text(title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
-
-              /// RED BADGE AT TOP RIGHT
               if (badge)
                 Positioned(
                   right: 12,
@@ -256,14 +239,96 @@ class SecurityHomeScreen extends StatelessWidget {
                     width: 10,
                     height: 10,
                     decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.red,
-                    ),
+                        shape: BoxShape.circle, color: Colors.red),
                   ),
                 ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// =========================
+  /// NOTIFICATIONS DIALOG
+  /// =========================
+  void _showNotifications(BuildContext context) async {
+  final List<Booking> activeBookings =
+      await DatabaseHelper.instance.getActiveBookings();
+
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text("Latest Notifications"),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: activeBookings.isEmpty
+            ? const Text(
+                "No new incoming vehicles at the moment.",
+                style: TextStyle(color: Colors.grey),
+              )
+            : ListView.builder(
+                shrinkWrap: true,
+                itemCount: activeBookings.length,
+                itemBuilder: (context, index) {
+                  final b = activeBookings[index];
+
+                  return ListTile(
+                    leading: const Icon(
+                      Icons.directions_car,
+                      color: kPrimaryGreen,
+                    ),
+                    title: Text(
+                      "Vehicle Arrived - ${b.plateNumber}",
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Text(
+                      "Area: ${b.areaName} • Slot: ${b.slot}\nCheck-in: ${b.startTime}",
+                    ),
+                  );
+                },
+              ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Close"),
+        )
+      ],
+    ),
+  );
+}
+
+
+  /// =========================
+  /// POLICE CONTACT DIALOG
+  /// =========================
+  void _showPoliceContact(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Emergency Contact"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text("Police Hotline: 110"),
+            SizedBox(height: 8),
+            Text("Campus Security Office"),
+            Text("Phone: (0274) 486737"),
+            SizedBox(height: 8),
+            Text(
+              "Use this contact in case of emergency situations or security threats.",
+              style: TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Close"),
+          )
+        ],
       ),
     );
   }

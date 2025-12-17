@@ -185,7 +185,6 @@ class _ScanQrScreenState extends State<ScanQrScreen>
                       textInputAction: TextInputAction.done,
                       style: const TextStyle(fontSize: 14),
                       decoration: const InputDecoration(
-                        hintText: "CPA-0001-A1B2C",
                         border: InputBorder.none,
                       ),
                     ),

@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("NIM atau password salah")),
+      const SnackBar(content: Text("Nomor induk atau password salah")),
     );
   }
 
@@ -85,18 +85,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 6),
 
                 Text(
-                  "Gunakan NIM & password UPN 'Veteran' Yogyakarta",
+                  "Gunakan Nomor induk & password UPN 'Veteran' Yogyakarta",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: Colors.grey),
                 ),
 
                 const SizedBox(height: 35),
 
-                _label("Nomor Induk Mahasiswa"),
+                _label("Nomor Induk"),
                 const SizedBox(height: 6),
                 _inputField(
                   controller: _nimController,
-                  hint: "Masukkan NIM",
+                  hint: "Masukkan Nomor Induk",
                   keyboard: TextInputType.number,
                 ),
 
